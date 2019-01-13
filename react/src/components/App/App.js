@@ -1,14 +1,20 @@
 import React from 'react';
 import Title from './components/Title/Title';
-import ListItem from './components/ListItem/ListItem';
-import axios from 'axios';
+import QuestionsList from './components/Questions/QuestionsList';
+import SignIn from './components/SignIn/SignIn';
+import { Switch, Route, Link, withRouter } from 'react-router-dom'
 import './styles.css';
+
+import { hot } from 'react-hot-loader';
+import { connect } from 'react-redux';
+import { changeTitle } from '../../store/ui';
 
 //------------Statefull component------------------
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            title: 'Main page',
             titleColor: 'red'
         };
 
@@ -27,35 +33,36 @@ class App extends React.Component {
         }
     }
 
-    componentWillMount() {
-        this.setState({
-            isLoading: true
-        });
-
-        axios.get('https://api.github.com/users/vikks15/repos').then(
-            response => {
-                this.setState({
-                    repos: response.data,
-                    isLoading: false
-                })              
-            },
-            error => {
-                this.setState({
-                    isLoading: false
-                })
-            });
-    }
-
     render() {
+        const {
+            titleColor,
+        } = this.state;
+
         return(
             <div>
-                <Title color={this.state.titleColor} />
-                { this.state.isLoading && <div>Загрузка...</div> }
-                { !this.state.isLoading &&                    
-                    this.state.repos.map(repo => <ListItem url={repo.clone_url} item={repo.name}/>)
-                    // ['ИУ5', 'ИУ6', 'ИУ7'].map(el => <ListItem>{el}</ListItem>)
-                }
+                {/* <Title color={this.props.titleColor} /> */}
+                <Title color={ titleColor }>
+                    {/* { this.props.title }  */}
+                    { this.state.title }
+                </Title>
+
+                <Switch>
+                    <Route path="/questions" component={ QuestionsList } />
+                    <Route path="/signin" component={ SignIn } />
+                </Switch>
+                
+                <Link to="/questions" className="link">
+                    Список вопросов
+                </Link>
+                
+                <p></p>
+
+                <Link to="/signin" className="link">
+                    Войти
+                </Link>
+
                 <div className="main-page-img" />
+
                 <div onClick={this.clickButton} className='my-button'>
                     Кнопка
                 </div>
@@ -64,16 +71,16 @@ class App extends React.Component {
     }
 }
 
-export default App;
+function mapStateToProps(state) {
+    return {
+        title: state.ui.title
+    }
+}
 
+const mapDispatchToProps = {
+    changeTitle
+};
 
-//------------Stateless component------------------
-// export default() => (
-//     <div>
-//         <Title color="red" />
-//         <div className="main-page-img" />
-//         <div onClick={() => {alert('click')}}>
-//             Кнопка
-//         </div>
-//     </div>
-// );
+export default hot(module)(withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(App))
+);

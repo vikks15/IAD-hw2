@@ -11,6 +11,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'build'),
+    publicPath:'/'
   },
   module: {
     rules: [
@@ -38,11 +39,13 @@ module.exports = {
       },
     ]
   },
-  devServer: {  
-    contentBase: build,       
-    compress: true,
-    port: 8080,
+  devServer: { 
     hot: true,
+    inline: true,
+    contentBase: false,
+    port: 8000,
+    publicPath:'/',
+    historyApiFallback: true,
   },
 
   plugins: [

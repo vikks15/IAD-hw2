@@ -5,7 +5,7 @@ const Title = props => {
     const titleClasses = `main-page-title title_${props.color}`;
     return (
         <div className={ titleClasses }>
-        Main page
+            { props.children }
         </div>
     );
 }
